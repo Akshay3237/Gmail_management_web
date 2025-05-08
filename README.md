@@ -22,8 +22,8 @@ Follow these steps to get the project running on your machine:
 1. **Clone the Repository**  
    Open your terminal and run:
    ```bash
-   git clone https://github.com/YourUsername/GmailAIHandler.git
-   cd GmailAIHandler
+   git clone https://github.com/Akshay3237/Gmail_management_web.git
+   cd Gmail_management_web
    ```
 
 2. **Install Required NuGet Packages**  
