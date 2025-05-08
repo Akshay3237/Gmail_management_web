@@ -1,0 +1,34 @@
+﻿@model Dictionary<string, int>
+
+@{
+    ViewData["Title"] = "Gmail Senders Summary";
+}
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Unique Gmail Senders</h2>
+    <a href="/logout" class="btn btn-danger">Logout</a>
+</div>
+@if (Model == null || !Model.Any())
+{
+        <p>No emails found.</p>
+}
+else
+{
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Sender</th>
+                    <th>Message Count</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var sender in Model.OrderByDescending(s => s.Value))
+            {
+                    <tr>
+                        <td>@sender.Key</td>
+                        <td>@sender.Value</td>
+                    </tr>
+            }
+            </tbody>
+        </table>
+}

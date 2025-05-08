@@ -1,0 +1,57 @@
+﻿@model List<GmailHandler.Models.EmailSummary>
+@{
+    ViewData["Title"] = "Inbox";
+    var page = (int)ViewBag.Page;
+    var hasNext = (bool)ViewBag.HasNext;
+    var hasPrevious = (bool)ViewBag.HasPrevious;
+}
+
+<h2>Gmail Inbox - Page</h2>
+
+<form asp-action="DeleteGmail" asp-controller="Gmail" method="post">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Delete</th>
+                <th>From</th>
+                <th>Subject</th>
+                <th>Snippet</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var email in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="messageIds" value="@email.Id" />
+                    </td>
+                    <td>@email.From</td>
+                    <td>@email.Subject</td>
+                    <td>@email.Snippet</td>
+                    <td>
+                        <a href="@Url.Action("MessageDetails", "Gmail", new { messageId = email.Id })">Click me</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-danger">Delete Selected</button>
+</form>
+
+<div class="d-flex justify-content-between mt-3">
+    @if (hasPrevious)
+    {
+        <a class="btn btn-outline-primary" href="@Url.Action("Index", "Gmail", new { page = page - 1 })">Previous</a>
+    }
+    else
+    {
+        <span></span>
+    }
+
+    @if (hasNext)
+    {
+        <a class="btn btn-outline-primary" href="@Url.Action("Index", "Gmail", new { page = page + 1 })">Next</a>
+    }
+</div>

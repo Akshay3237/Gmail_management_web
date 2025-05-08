@@ -1,0 +1,32 @@
+﻿@model Google.Apis.Gmail.v1.Data.Message
+
+@{
+    ViewBag.Title = "Message Summary";
+}
+
+<a asp-controller="Gmail" asp-action="Index" class="btn btn-secondary mb-3">← Back to Inbox</a>
+
+<h2>Message Details</h2>
+
+<div>
+    <strong>Message ID:</strong> @Model.Id <br />
+    <strong>Thread ID:</strong> @Model.ThreadId <br />
+</div>
+
+<h3>Headers</h3>
+<ul>
+    @foreach (var header in Model.Payload?.Headers ?? new List<Google.Apis.Gmail.v1.Data.MessagePartHeader>())
+    {
+        <li><strong>@header.Name:</strong> @header.Value</li>
+    }
+</ul>
+<h3>Body</h3>
+<div style="white-space: pre-wrap;">
+    @Html.Raw(ViewBag.Body)
+</div>
+
+<h3>Summary</h3>
+<div style="white-space: pre-wrap;">
+    @Html.Raw(ViewBag.Summary)
+</div>
+
