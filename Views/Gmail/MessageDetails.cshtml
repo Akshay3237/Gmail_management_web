@@ -2,26 +2,64 @@
 
 @{
     ViewBag.Title = "Message Details";
+
+    // Try to find "List-Unsubscribe" header
+    var unsubscribeHeader = Model.Payload?.Headers?.FirstOrDefault(h => h.Name.Equals("List-Unsubscribe", StringComparison.OrdinalIgnoreCase))?.Value;
+
+    // Extract the first URL inside < > or plain text
+    string unsubscribeUrl = null;
+
+    if (!string.IsNullOrEmpty(unsubscribeHeader))
+    {
+        var matches = System.Text.RegularExpressions.Regex.Matches(unsubscribeHeader, @"<([^>]+)>|https?:\/\/[^\s,>]+");
+        if (matches.Count > 0)
+        {
+            unsubscribeUrl = matches[0].Groups[1].Success ? matches[0].Groups[1].Value : matches[0].Value;
+        }
+    }
 }
 
-<a asp-controller="Gmail" asp-action="Index" class="btn btn-secondary mb-3">← Back to Inbox</a>
-<a asp-controller="Gmail" asp-action="Messagesummary" asp-route-messageId="@Model.Id" class="btn btn-secondary mb-3">Summarize</a>
+<div class="container mt-4">
 
-<h2>Message Details</h2>
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <a asp-controller="Gmail" asp-action="Index" class="btn btn-secondary me-2">← Back to Inbox</a>
+            <a asp-controller="Gmail" asp-action="Messagesummary" asp-route-messageId="@Model.Id" class="btn btn-info me-2">Summarize</a>
 
-<div>
-    <strong>Message ID:</strong> @Model.Id <br />
-    <strong>Thread ID:</strong> @Model.ThreadId <br />
-</div>
+            @if (!string.IsNullOrEmpty(unsubscribeUrl))
+            {
+                <a href="@unsubscribeUrl" class="btn btn-warning me-2" target="_blank" rel="noopener noreferrer">Unsubscribe</a>
+            }
+        </div>
 
-<h3>Headers</h3>
-<ul>
-    @foreach (var header in Model.Payload?.Headers ?? new List<Google.Apis.Gmail.v1.Data.MessagePartHeader>())
-    {
-        <li><strong>@header.Name:</strong> @header.Value</li>
-    }
-</ul>
-<h3>Body</h3>
-<div style="white-space: pre-wrap;">
-    @Html.Raw(ViewBag.Body)
+        <form asp-controller="Gmail" asp-action="DeleteGmail" method="post" class="d-inline">
+            <input type="hidden" name="messageIds" value="@Model.Id" />
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+
+    <div class="card p-3 mb-4 shadow-sm">
+        <h2 class="card-title">Message Details</h2>
+        <p><strong>Message ID:</strong> @Model.Id</p>
+        <p><strong>Thread ID:</strong> @Model.ThreadId</p>
+    </div>
+
+    <div class="card p-3 mb-4 shadow-sm">
+        <h3 class="card-title">Headers</h3>
+        <ul class="list-group list-group-flush">
+            @foreach (var header in Model.Payload?.Headers ?? new List<Google.Apis.Gmail.v1.Data.MessagePartHeader>())
+            {
+                <li class="list-group-item">
+                    <strong>@header.Name:</strong> @header.Value
+                </li>
+            }
+        </ul>
+    </div>
+
+    <div class="card p-3 shadow-sm">
+        <h3 class="card-title">Body</h3>
+        <div class="mt-2" style="white-space: pre-wrap;">
+            @Html.Raw(ViewBag.Body)
+        </div>
+    </div>
 </div>

@@ -21,6 +21,8 @@ namespace GmailHandler
 
             builder.Services.AddSingleton<IAiService, AiService>();
 
+            builder.Services.AddSingleton<IUniqueSenderService, UniqueSenderService>();
+            
             builder.Services.AddHttpContextAccessor();
             // Add memory cache
             builder.Services.AddMemoryCache();
@@ -42,10 +44,11 @@ namespace GmailHandler
 
             app.UseAuthorization();
 
-            app.Map("summary", async (HttpContext context, IAiService aiservice) =>
+            app.Map("checkinguniquesenders", async (HttpContext context,IUniqueSenderService uniqueSender) =>
             {
-                string text = aiservice.summary("you have follow 5 roles from our website you can visit our website and use folowing 5 roles for it. you can apply on it");
-                return Results.Ok(text);
+                List<Models.UniqueSenderModel> senders=  uniqueSender.GetUniqueSenders(20);
+
+                return Results.Ok(senders);
             });
             app.MapControllerRoute(
                 name: "default",

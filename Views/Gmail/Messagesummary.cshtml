@@ -4,29 +4,46 @@
     ViewBag.Title = "Message Summary";
 }
 
-<a asp-controller="Gmail" asp-action="Index" class="btn btn-secondary mb-3">← Back to Inbox</a>
+<div class="container mt-4">
 
-<h2>Message Details</h2>
+    <!-- Navigation Button -->
+    <div class="mb-4">
+        <a asp-controller="Gmail" asp-action="Index" class="btn btn-secondary">← Back to Inbox</a>
+    </div>
 
-<div>
-    <strong>Message ID:</strong> @Model.Id <br />
-    <strong>Thread ID:</strong> @Model.ThreadId <br />
+    <!-- Message Meta Info -->
+    <div class="card p-3 mb-4 shadow-sm">
+        <h2 class="card-title">Message Details</h2>
+        <p><strong>Message ID:</strong> @Model.Id</p>
+        <p><strong>Thread ID:</strong> @Model.ThreadId</p>
+    </div>
+
+    <!-- Headers -->
+    <div class="card p-3 mb-4 shadow-sm">
+        <h3 class="card-title">Headers</h3>
+        <ul class="list-group list-group-flush">
+            @foreach (var header in Model.Payload?.Headers ?? new List<Google.Apis.Gmail.v1.Data.MessagePartHeader>())
+            {
+                <li class="list-group-item">
+                    <strong>@header.Name:</strong> @header.Value
+                </li>
+            }
+        </ul>
+    </div>
+
+    <!-- Body Content -->
+    <div class="card p-3 mb-4 shadow-sm">
+        <h3 class="card-title">Body</h3>
+        <div class="mt-2" style="white-space: pre-wrap;">
+            @Html.Raw(ViewBag.Body)
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="card p-3 shadow-sm bg-light">
+        <h3 class="card-title text-primary">Summary</h3>
+        <div class="mt-2" style="white-space: pre-wrap;">
+            @Html.Raw(ViewBag.Summary)
+        </div>
+    </div>
 </div>
-
-<h3>Headers</h3>
-<ul>
-    @foreach (var header in Model.Payload?.Headers ?? new List<Google.Apis.Gmail.v1.Data.MessagePartHeader>())
-    {
-        <li><strong>@header.Name:</strong> @header.Value</li>
-    }
-</ul>
-<h3>Body</h3>
-<div style="white-space: pre-wrap;">
-    @Html.Raw(ViewBag.Body)
-</div>
-
-<h3>Summary</h3>
-<div style="white-space: pre-wrap;">
-    @Html.Raw(ViewBag.Summary)
-</div>
-

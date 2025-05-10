@@ -1,0 +1,272 @@
+﻿@model List<GmailHandler.Models.UniqueSenderModel>
+
+@{
+    ViewBag.Title = "Unique Senders";
+}
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin-top: 30px;
+    }
+
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .table thead {
+        background-color: #f8f9fa;
+    }
+
+    .table th {
+        font-weight: bold;
+        color: #495057;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+    }
+
+    .btn {
+        padding: 5px 15px;
+        font-size: 14px;
+        border-radius: 5px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .alert-info {
+        font-size: 1.2rem;
+        color: #17a2b8;
+        background-color: #d1ecf1;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .form-inline {
+        display: inline-block;
+    }
+
+    .dropdown-container {
+        margin-bottom: 20px;
+    }
+
+    .dropdown {
+        padding: 10px;
+        font-size: 14px;
+    }
+</style>
+
+<div class="container">
+    <h2>Unique Senders</h2>
+
+    <form id="maxMailsForm" method="get" asp-action="Index" asp-controller="UniqueSenders">
+        <label for="maxMails">Select max emails to fetch:</label>
+        <select id="maxMails" name="maxLength" onchange="checkMaxMails()" class="dropdown">
+            @if (ViewBag.maxLength == "10")
+            {
+                <option selected value="10">10</option>
+            }
+            else
+            {
+                <option value="10">10</option>
+            }
+
+            @if (ViewBag.maxLength == "20")
+            {
+                <option selected value="20">20</option>
+            }
+            else
+            {
+                <option value="20">20</option>
+            }
+
+            @if (ViewBag.maxLength == "30")
+            {
+                <option selected value="30">30</option>
+            }
+            else
+            {
+                <option value="30">30</option>
+            }
+
+            @if (ViewBag.maxLength == "40")
+            {
+                <option selected value="40">40</option>
+            }
+            else
+            {
+                <option value="40">40</option>
+            }
+
+            @if (ViewBag.maxLength == "50")
+            {
+                <option selected value="50">50</option>
+            }
+            else
+            {
+                <option value="50">50</option>
+            }
+
+            @if (ViewBag.maxLength == "100")
+            {
+                <option selected value="100">100</option>
+            }
+            else
+            {
+                <option value="100">100</option>
+            }
+
+            @if (ViewBag.maxLength == "200")
+            {
+                <option selected value="200">200</option>
+            }
+            else
+            {
+                <option value="200">200</option>
+            }
+
+            @if (ViewBag.maxLength == "500")
+            {
+                <option selected value="500">500</option>
+            }
+            else
+            {
+                <option value="500">500</option>
+            }
+
+            @if (ViewBag.maxLength == "1000")
+            {
+                <option selected value="1000">1000</option>
+            }
+            else
+            {
+                <option value="1000">1000</option>
+            }
+
+            @if (ViewBag.maxLength == "1500")
+            {
+                <option selected value="1500">1500</option>
+            }
+            else
+            {
+                <option value="1500">1500</option>
+            }
+
+            @if (ViewBag.maxLength == "2000")
+            {
+                <option selected value="2000">2000</option>
+            }
+            else
+            {
+                <option value="2000">2000</option>
+            }
+
+            @if (ViewBag.maxLength == "2500")
+            {
+                <option selected value="2500">2500</option>
+            }
+            else
+            {
+                <option value="2500">2500</option>
+            }
+
+            @if (ViewBag.maxLength == "-1")
+            {
+                <option selected value="-1">All</option>
+            }
+            else
+            {
+                <option value="-1">All</option>
+            }
+        </select>
+    </form>
+
+    <script>
+        // JavaScript function to check selected max mails and show confirmation if it's 500 or more
+        function checkMaxMails() {
+            const dropdown = document.getElementById("maxMails");
+            const value = parseInt(dropdown.value);
+
+            // Check if the selected value is 500 or greater
+            if (value >= 500 || value === -1) {
+                const confirmContinue = confirm("Fetching many emails (500 or more) may take a longer time. Please be patient. Do you want to continue?");
+                if (!confirmContinue) {
+                    // Revert to the previously selected value if user cancels
+                    dropdown.value = "@ViewBag.maxLength";
+                    return; // Don't submit the form if user cancels
+                }
+            }
+
+            // Submit the form after confirmation or if the value is under 500
+            document.getElementById("maxMailsForm").submit();
+        }
+    </script>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No senders found.</div>
+    }
+    else
+    {
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Sender</th>
+                    <th>Total Messages</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var sender in Model)
+                {
+                    <tr>
+                        <td>@sender.SenderName</td>
+                        <td>@sender.MessageCount</td>
+                        <td>
+                            <form asp-controller="Gmail" asp-action="DeleteGmail" method="post" class="form-inline">
+                                @foreach (var messageId in sender.MessageIds)
+                                {
+                                    <input type="hidden" name="messageIds" value="@messageId" />
+                                }
+                                <button type="submit" class="btn btn-danger">Delete All</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+
+</div>
+
