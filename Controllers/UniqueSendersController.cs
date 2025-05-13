@@ -1,4 +1,5 @@
-﻿using GmailHandler.Services;
+﻿using GmailHandler.Models;
+using GmailHandler.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GmailHandler.Controllers
@@ -46,11 +47,11 @@ namespace GmailHandler.Controllers
             }
 
             // Fetch unique senders with the specified maxMessages
-            var uniqueSenders = uniqueSenderService.GetUniqueSenders(maxMessages);
+            List<UniqueSenderModel> uniqueSenders = uniqueSenderService.GetUniqueSenders(maxMessages);
 
             // Set the maxLength value in ViewBag for the view to know which option was selected
             ViewBag.maxLength = maxMessages.ToString();  // Set as string for the dropdown
-
+            ViewBag.TotalMessages=uniqueSenders.Sum((UniqueSenderModel obj)=> obj.MessageCount);
             return View(uniqueSenders);
         }
 

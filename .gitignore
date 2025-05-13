@@ -8,6 +8,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/Dotnet.gitignore
 wwwroot/secrets/cridential.json
 appsettings.json
+token.json
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

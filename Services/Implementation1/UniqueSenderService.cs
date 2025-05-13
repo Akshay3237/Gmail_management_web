@@ -10,6 +10,8 @@ namespace GmailHandler.Services.Implementation1
     {
         private readonly IAuthenticateService authenticateService;
 
+        private readonly int MaxSizeInEachRequest=200;
+
         public UniqueSenderService(IAuthenticateService authenticateService)
         {
             this.authenticateService = authenticateService;
@@ -29,7 +31,7 @@ namespace GmailHandler.Services.Implementation1
                 do
                 {
                     var request = service.Users.Messages.List("me");
-                    request.MaxResults = 1000; // Fetch 1000 at a time
+                    request.MaxResults = MaxSizeInEachRequest; // Fetch maxsizeineachrequest at a time
                     request.PageToken = pageToken;
 
                     var messageListResponse = request.Execute();
@@ -60,9 +62,9 @@ namespace GmailHandler.Services.Implementation1
 
                 } while (pageToken != null); // Continue until all messages are retrieved
             }
-            else if (maxLength <= 1000)
+            else if (maxLength <= MaxSizeInEachRequest)
             {
-                // If maxLength <= 1000, just retrieve the specified number of messages (up to maxLength)
+                // If maxLength <= MaxSizeInEachRequest, just retrieve the specified number of messages (up to maxLength)
                 var request = service.Users.Messages.List("me");
                 request.MaxResults = maxLength; // Fetch up to maxLength messages
                 var messageListResponse = request.Execute();
@@ -87,13 +89,13 @@ namespace GmailHandler.Services.Implementation1
                     }
                 }
             }
-            else // maxLength > 1000
+            else // maxLength > MaxSizeInEachRequest
             {
-                // If maxLength > 1000, use pagination and limit to maxLength
+                // If maxLength > MaxSizeInEachRequest, use pagination and limit to maxLength
                 do
                 {
                     var request = service.Users.Messages.List("me");
-                    request.MaxResults = 1000; // Fetch 1000 at a time
+                    request.MaxResults = MaxSizeInEachRequest; // Fetch MaxSizeInEachRequest at a time
                     request.PageToken = pageToken;
 
                     var messageListResponse = request.Execute();

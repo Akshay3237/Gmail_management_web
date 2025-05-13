@@ -102,17 +102,30 @@ namespace GmailHandler.Services.Implementation1
             return System.Text.Encoding.UTF8.GetString(bytes);
         }
 
+        private List<string> ParseMessageIds(string messageIds)
+        {
+            if (string.IsNullOrWhiteSpace(messageIds))
+                return new List<string>();
+
+            return messageIds
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(id => id.Trim())
+                .ToList();
+        }
+
         public void DeleteMessages(List<string> messageIds)
         {
             if (messageIds == null || messageIds.Count == 0)
                 return;
-
+            List<string> modifiedMessageIds = messageIds
+            .SelectMany(message => ParseMessageIds(message))
+            .ToList();
             GmailService _gmailService = _authService.getServiceFromToken();
-
+            Console.WriteLine("message ids " + messageIds.ToString());
             // Use BatchDelete request
             var batchDeleteRequest = new Google.Apis.Gmail.v1.Data.BatchDeleteMessagesRequest
             {
-                Ids = messageIds
+                Ids = modifiedMessageIds
             };
 
             _gmailService.Users.Messages.BatchDelete(batchDeleteRequest, "me").Execute();

@@ -84,6 +84,11 @@
         padding: 10px;
         font-size: 14px;
     }
+
+    .btn-show-delete {
+        margin-top: 20px;
+        display: none;
+    }
 </style>
 
 <div class="container">
@@ -230,6 +235,24 @@
             // Submit the form after confirmation or if the value is under 500
             document.getElementById("maxMailsForm").submit();
         }
+
+        function toggleDeleteButton() {
+            const checkboxes = document.querySelectorAll('.delete-checkbox');
+            const deleteButton = document.getElementById('deleteSelectedButton');
+            let selected = false;
+
+            checkboxes.forEach(function (checkbox) {
+                if (checkbox.checked) {
+                    selected = true;
+                }
+            });
+
+            if (selected) {
+                deleteButton.style.display = 'inline-block';
+            } else {
+                deleteButton.style.display = 'none';
+            }
+        }
     </script>
 
     @if (!Model.Any())
@@ -238,35 +261,47 @@
     }
     else
     {
-        <table class="table table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>Sender</th>
-                    <th>Total Messages</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var sender in Model)
-                {
+        <form id="deleteSelectedForm" asp-controller="Gmail" asp-action="DeleteGmail" method="post">
+            <button type="submit" id="deleteSelectedButton" class="btn btn-danger btn-show-delete">Delete Selected</button>
+            <table class="table table-bordered table-hover">
+                <thead>
                     <tr>
-                        <td>@sender.SenderName</td>
-                        <td>@sender.MessageCount</td>
-                        <td>
-                            <form asp-controller="Gmail" asp-action="DeleteGmail" method="post" class="form-inline">
-                                @foreach (var messageId in sender.MessageIds)
-                                {
-                                    <input type="hidden" name="messageIds" value="@messageId" />
-                                }
-                                <button type="submit" class="btn btn-danger">Delete All</button>
-                            </form>
-                        </td>
+                        <th><input type="checkbox" id="selectAll" onclick="selectAllCheckboxes(this)" /></th>
+                        <th>Sender</th>
+                        <th>Total Messages</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var sender in Model)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="delete-checkbox" name="messageIds" value="@string.Join(",", sender.MessageIds)" onclick="toggleDeleteButton()" />
+                            </td>
+                            <td>@sender.SenderName</td>
+                            <td>@sender.MessageCount</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" style="font-weight: bold;">Total Messages</td>
+                        <td style="font-weight: bold;">@ViewBag.TotalMessages</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </form>
     }
-
+    <script>
+        // JavaScript to select/deselect all checkboxes
+        function selectAllCheckboxes(selectAllCheckbox) {
+            const checkboxes = document.querySelectorAll('.delete-checkbox');
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            toggleDeleteButton();
+        }
+    </script>
 
 </div>
 
